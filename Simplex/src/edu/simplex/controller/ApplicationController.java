@@ -64,9 +64,9 @@ public class ApplicationController implements Initializable {
     private void highlightPivotColumn(int pivotColumn) {
         for (int i = 0; i < tableColumns.size(); i++) {
             if (i == pivotColumn) {
-                tableColumns.get(i).setStyle("-fx-background-color:green;");
+                tableColumns.get(i).setStyle("-fx-background-color:linear-gradient(#77AA77,#88AA88);");
             } else {
-                tableColumns.get(i).setStyle("");
+                tableColumns.get(i).setStyle("-fx-background-color:linear-gradient(white,#DDDDDD);");
             }
         }
     }
