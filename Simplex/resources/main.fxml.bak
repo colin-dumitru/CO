@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="edu.simplex.controller.ApplicationController">
+  <children>
+    <TableView id="" fx:id="simplexTableView" prefHeight="365.0" prefWidth="600.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <Button fx:id="loadButton" layoutX="550.0" layoutY="371.0" mnemonicParsing="false" text="Load" />
+    <Button fx:id="nextButton" layoutX="455.0" layoutY="371.0" mnemonicParsing="false" text="Next Iteration" />
+  </children>
+</AnchorPane>
