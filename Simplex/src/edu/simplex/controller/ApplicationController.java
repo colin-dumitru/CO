@@ -4,7 +4,6 @@ import edu.simplex.algorithm.SimplexSolver;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -63,8 +62,8 @@ public class ApplicationController implements Initializable {
     }
 
     private void highlightPivotColumn(int pivotColumn) {
-        for(int i = 0; i < tableColumns.size(); i++) {
-            if(i == pivotColumn) {
+        for (int i = 0; i < tableColumns.size(); i++) {
+            if (i == pivotColumn) {
                 tableColumns.get(i).setStyle("-fx-background-color:green;");
             } else {
                 tableColumns.get(i).setStyle("");
@@ -110,12 +109,12 @@ public class ApplicationController implements Initializable {
     }
 
     private List<TableColumn> createColumns() {
-        if(table.isEmpty()) {
+        if (table.isEmpty()) {
             return new ArrayList<>();
         }
         final List<TableColumn> columns = new ArrayList<>();
 
-        for(int i = 0; i < table.get(0).length; i++) {
+        for (int i = 0; i < table.get(0).length; i++) {
             TableColumn<SimplexRow, Double> tableColumn = new TableColumn<>(String.format("X%s", i + 1));
             tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SimplexRow, Double>, ObservableValue<Double>>() {
                 @Override
@@ -150,7 +149,7 @@ public class ApplicationController implements Initializable {
 
     private void addRow(String[] params) {
         Double[] values = new Double[params.length];
-        for(int i = 0; i < params.length; i++) {
+        for (int i = 0; i < params.length; i++) {
             values[i] = Double.parseDouble(params[i]);
         }
         table.add(values);
