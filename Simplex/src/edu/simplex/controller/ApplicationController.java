@@ -17,6 +17,7 @@ import javafx.util.Callback;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -31,9 +32,19 @@ public class ApplicationController implements Initializable {
     private Button nextButton;
     @FXML
     private TableView simplexTableView;
+    @FXML
+    private TableView cVector;
+    @FXML
+    private TableView optimalSolutionVector;
+    @FXML
+    private TableView sMatrix;
 
     private List<Double[]> table;
     private List<TableColumn> tableColumns;
+    private List<TableColumn> cVectorColumns;
+    private List<TableColumn> yVectorColumns;
+    private List<TableColumn> sMatrixColumns;
+    private List<Double[]> sTable;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -90,20 +101,43 @@ public class ApplicationController implements Initializable {
         resetRows();
     }
 
-    private void resetRows() {
-        List<SimplexRow> tableRows = createRows();
-        simplexTableView.setItems(FXCollections.observableArrayList(tableRows));
-    }
-
     private void resetColumns() {
         tableColumns = createColumns();
+        cVectorColumns = createCVectorColumns();
+        sMatrixColumns = createSMatrixColumns();
         simplexTableView.getColumns().addAll(tableColumns);
+        cVector.getColumns().addAll(cVectorColumns);
+        sMatrix.getColumns().addAll(sMatrixColumns);
+    }
+
+    private void resetRows() {
+        List<SimplexRow> tableRows = createRows();
+        List<SimplexRow> cRows = createCVectorRows();
+        List<SimplexRow> sMatrixRows = createSMatrixRows();
+        simplexTableView.setItems(FXCollections.observableArrayList(tableRows));
+        cVector.setItems(FXCollections.observableArrayList(cRows));
+        sMatrix.setItems(FXCollections.observableArrayList(sMatrixRows));
     }
 
     private List<SimplexRow> createRows() {
         List<SimplexRow> rows = new ArrayList<>();
         for (Double[] values : table) {
             rows.add(new SimplexRow(values));
+        }
+        return rows;
+    }
+
+    private List<SimplexRow> createCVectorRows() {
+        List<SimplexRow> rows = new ArrayList<>();
+        Double[] firstRow = table.iterator().next();
+        rows.add(new SimplexRow(Arrays.copyOf(firstRow, firstRow.length - table.size())));
+        return rows;
+    }
+
+    private List<SimplexRow> createSMatrixRows() {
+        List<SimplexRow> rows = new ArrayList<>();
+        for (Double[] values : table) {
+            rows.add(new SimplexRow(Arrays.copyOfRange(values, values.length - table.size(), values.length)));
         }
         return rows;
     }
@@ -116,6 +150,66 @@ public class ApplicationController implements Initializable {
 
         for (int i = 0; i < table.get(0).length; i++) {
             TableColumn<SimplexRow, Double> tableColumn = new TableColumn<>(String.format("X%s", i + 1));
+            tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SimplexRow, Double>, ObservableValue<Double>>() {
+                @Override
+                public ObservableValue<Double> call(TableColumn.CellDataFeatures<SimplexRow, Double> data) {
+                    Integer tableColumnsIndex = columns.indexOf(data.getTableColumn());
+                    return new ReadOnlyObjectWrapper<>(data.getValue().getRowValues()[tableColumnsIndex]);
+                }
+            });
+            columns.add(tableColumn);
+        }
+        return columns;
+    }
+
+    private List<TableColumn> createCVectorColumns() {
+        if (table.isEmpty()) {
+            return new ArrayList<>();
+        }
+        final List<TableColumn> columns = new ArrayList<>();
+
+        for (int i = 0; i < table.get(0).length - table.size(); i++) {
+            TableColumn<SimplexRow, Double> tableColumn = new TableColumn<>(String.format("C%s", i + 1));
+            tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SimplexRow, Double>, ObservableValue<Double>>() {
+                @Override
+                public ObservableValue<Double> call(TableColumn.CellDataFeatures<SimplexRow, Double> data) {
+                    Integer tableColumnsIndex = columns.indexOf(data.getTableColumn());
+                    return new ReadOnlyObjectWrapper<>(data.getValue().getRowValues()[tableColumnsIndex]);
+                }
+            });
+            columns.add(tableColumn);
+        }
+        return columns;
+    }
+
+    private List<TableColumn> createYVectorColumns() {
+        if (table.isEmpty()) {
+            return new ArrayList<>();
+        }
+        final List<TableColumn> columns = new ArrayList<>();
+
+        for (int i = 0; i < sMatrixColumns.size(); i++) {
+            TableColumn<SimplexRow, Double> tableColumn = new TableColumn<>(String.format("C%s", i + 1));
+            tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SimplexRow, Double>, ObservableValue<Double>>() {
+                @Override
+                public ObservableValue<Double> call(TableColumn.CellDataFeatures<SimplexRow, Double> data) {
+                    Integer tableColumnsIndex = columns.indexOf(data.getTableColumn());
+                    return new ReadOnlyObjectWrapper<>(data.getValue().getRowValues()[tableColumnsIndex]);
+                }
+            });
+            columns.add(tableColumn);
+        }
+        return columns;
+    }
+
+    private List<TableColumn> createSMatrixColumns() {
+        if (table.isEmpty()) {
+            return new ArrayList<>();
+        }
+        final List<TableColumn> columns = new ArrayList<>();
+
+        for (int i = table.get(0).length - table.size(); i < table.get(0).length; i++) {
+            TableColumn<SimplexRow, Double> tableColumn = new TableColumn<>(String.format("S%s", i + 1));
             tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SimplexRow, Double>, ObservableValue<Double>>() {
                 @Override
                 public ObservableValue<Double> call(TableColumn.CellDataFeatures<SimplexRow, Double> data) {
@@ -157,5 +251,16 @@ public class ApplicationController implements Initializable {
 
     private void initTable() {
         table = new ArrayList<>();
+    }
+
+    public static double[] multiply(double[] x, double[][] A) {
+        int m = A.length;
+        int n = A[0].length;
+        if (x.length != m) throw new RuntimeException("Illegal matrix dimensions.");
+        double[] y = new double[n];
+        for (int j = 0; j < n; j++)
+            for (int i = 0; i < m; i++)
+                y[j] += (A[i][j] * x[i]);
+        return y;
     }
 }

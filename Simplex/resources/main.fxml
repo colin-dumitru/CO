@@ -6,10 +6,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="edu.simplex.controller.ApplicationController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="621.0" xmlns:fx="http://javafx.com/fxml" fx:controller="edu.simplex.controller.ApplicationController">
   <children>
-    <TableView id="" fx:id="simplexTableView" prefHeight="365.0" prefWidth="600.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <TableView id="" fx:id="simplexTableView" prefHeight="304.5" prefWidth="621.0" AnchorPane.bottomAnchor="259.5" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
     <Button fx:id="loadButton" mnemonicParsing="false" text="Load" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="4.0" />
     <Button fx:id="nextButton" mnemonicParsing="false" text="Next Iteration" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="52.0" />
+    <TableView fx:id="cVector" prefHeight="62.0" prefWidth="287.0" AnchorPane.bottomAnchor="191.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="320.0" />
+    <TableView fx:id="sMatrix" prefHeight="214.0" prefWidth="287.0" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="14.0" />
+    <TableView id="optimalSolution" fx:id="optimalSolutionVector" prefHeight="62.0" prefWidth="287.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="320.0" />
   </children>
 </AnchorPane>
