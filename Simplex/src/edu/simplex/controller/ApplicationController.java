@@ -105,8 +105,10 @@ public class ApplicationController implements Initializable {
         tableColumns = createColumns();
         cVectorColumns = createCVectorColumns();
         sMatrixColumns = createSMatrixColumns();
+        yVectorColumns = createYVectorColumns();
         simplexTableView.getColumns().addAll(tableColumns);
         cVector.getColumns().addAll(cVectorColumns);
+        optimalSolutionVector.getColumns().addAll(yVectorColumns);
         sMatrix.getColumns().addAll(sMatrixColumns);
     }
 
@@ -114,9 +116,11 @@ public class ApplicationController implements Initializable {
         List<SimplexRow> tableRows = createRows();
         List<SimplexRow> cRows = createCVectorRows();
         List<SimplexRow> sMatrixRows = createSMatrixRows();
+        List<SimplexRow> yRows = createYVectorRows();
         simplexTableView.setItems(FXCollections.observableArrayList(tableRows));
         cVector.setItems(FXCollections.observableArrayList(cRows));
         sMatrix.setItems(FXCollections.observableArrayList(sMatrixRows));
+        optimalSolutionVector.setItems(FXCollections.observableArrayList(yRows));
     }
 
     private List<SimplexRow> createRows() {
@@ -127,19 +131,39 @@ public class ApplicationController implements Initializable {
         return rows;
     }
 
+    private List<SimplexRow> createYVectorRows() {
+        List<SimplexRow> rows = new ArrayList<>();
+        Double[] yResult = multiply(getCVector(), getSMatrix());
+        rows.add(new SimplexRow(yResult));
+        return rows;
+    }
+
     private List<SimplexRow> createCVectorRows() {
         List<SimplexRow> rows = new ArrayList<>();
-        Double[] firstRow = table.iterator().next();
-        rows.add(new SimplexRow(Arrays.copyOf(firstRow, firstRow.length - table.size())));
+        rows.add(new SimplexRow(getCVector()));
         return rows;
+    }
+
+    private Double[] getCVector() {
+        Double[] firstRow = table.get(table.size() - 1);
+        return Arrays.copyOf(firstRow, firstRow.length - table.size());
     }
 
     private List<SimplexRow> createSMatrixRows() {
         List<SimplexRow> rows = new ArrayList<>();
-        for (Double[] values : table) {
-            rows.add(new SimplexRow(Arrays.copyOfRange(values, values.length - table.size(), values.length)));
+        Double[][] sMatrix = getSMatrix();
+        for (Double[] values : sMatrix) {
+            rows.add(new SimplexRow(values));
         }
         return rows;
+    }
+
+    private Double[][] getSMatrix() {
+        List<Double[]> rows = new ArrayList<>();
+        for (Double[] values : table) {
+            rows.add(Arrays.copyOfRange(values, values.length - table.size(), values.length));
+        }
+        return rows.toArray(new Double[rows.size()][]);
     }
 
     private List<TableColumn> createColumns() {
@@ -189,7 +213,7 @@ public class ApplicationController implements Initializable {
         final List<TableColumn> columns = new ArrayList<>();
 
         for (int i = 0; i < sMatrixColumns.size(); i++) {
-            TableColumn<SimplexRow, Double> tableColumn = new TableColumn<>(String.format("C%s", i + 1));
+            TableColumn<SimplexRow, Double> tableColumn = new TableColumn<>(String.format("Y%s", i + 1));
             tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<SimplexRow, Double>, ObservableValue<Double>>() {
                 @Override
                 public ObservableValue<Double> call(TableColumn.CellDataFeatures<SimplexRow, Double> data) {
@@ -253,11 +277,12 @@ public class ApplicationController implements Initializable {
         table = new ArrayList<>();
     }
 
-    public static double[] multiply(double[] x, double[][] A) {
+    public static Double[] multiply(Double[] x, Double[][] A) {
         int m = A.length;
         int n = A[0].length;
         if (x.length != m) throw new RuntimeException("Illegal matrix dimensions.");
-        double[] y = new double[n];
+        Double[] y = new Double[n];
+        Arrays.fill(y, 0D);
         for (int j = 0; j < n; j++)
             for (int i = 0; i < m; i++)
                 y[j] += (A[i][j] * x[i]);
