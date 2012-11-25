@@ -46,7 +46,9 @@ public class ApplicationController implements Initializable {
     private List<Double[]> table;
     private List<TableColumn> tableColumns;
     private List<TableColumn> cVectorColumns;
+    private List<TableColumn> yVectorColumns;
     private List<TableColumn> sMatrixColumns;
+    private List<Double[]> sTable;
     private Double m;
 
     @Override
