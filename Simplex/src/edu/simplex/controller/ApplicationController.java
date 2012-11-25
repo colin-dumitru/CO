@@ -9,17 +9,19 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * Catalin Dumitru
@@ -38,16 +40,18 @@ public class ApplicationController implements Initializable {
     private TableView optimalSolutionVector;
     @FXML
     private TableView sMatrix;
+    @FXML
+    private Label mLabel;
 
     private List<Double[]> table;
     private List<TableColumn> tableColumns;
     private List<TableColumn> cVectorColumns;
-    private List<TableColumn> yVectorColumns;
     private List<TableColumn> sMatrixColumns;
-    private List<Double[]> sTable;
+    private Double m;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        m = (new Random().nextDouble() / 2 + 0.5) + 100000000000D;
         bindControls();
     }
 
@@ -64,6 +68,8 @@ public class ApplicationController implements Initializable {
                 nextIteration();
             }
         });
+
+        mLabel.setText(new DecimalFormat("0.000").format(m));
     }
 
     private void nextIteration() {
@@ -268,9 +274,20 @@ public class ApplicationController implements Initializable {
     private void addRow(String[] params) {
         Double[] values = new Double[params.length];
         for (int i = 0; i < params.length; i++) {
-            values[i] = Double.parseDouble(params[i]);
+            values[i] = getValue(params[i]);
         }
         table.add(values);
+    }
+
+    private Double getValue(String expression) {
+        ScriptEngineManager mgr = new ScriptEngineManager();
+        ScriptEngine engine = mgr.getEngineByName("JavaScript");
+
+        try {
+            return (Double) engine.eval(expression.replaceAll("M", new DecimalFormat("0.000").format(m)));
+        } catch (ScriptException e) {
+            return null;
+        }
     }
 
     private void initTable() {
